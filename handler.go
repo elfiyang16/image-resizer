@@ -9,9 +9,12 @@ import (
 )
 
 func Handler(ctx context.Context, s3Event events.S3Event) {
-	config := NewConfig()
-	var writer aws.WriteAtBuffer
+	config, err := NewConfig()
+	if err != nil {
+		log.Println("failed to init config, %v", err)
+	}
 
+	var writer aws.WriteAtBuffer
 	for _, record := range s3Event.Records {
 		objectKey := record.S3.Object.Key
 		if err := DownloadFile(config, &writer, objectKey); err != nil {

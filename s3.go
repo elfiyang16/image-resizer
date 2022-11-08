@@ -9,12 +9,7 @@ import (
 )
 
 func DownloadFile(config *Config, writer io.WriterAt, objectKey string) error {
-	downloader, err := NewS3Downloader(config)
-	if err != nil {
-		return fmt.Errorf("failed to init s3 downloader, %v", err)
-	}
-
-	imgBytes, err := downloader.Download(writer,
+	_, err := config.Downloader.Download(writer,
 		&s3.GetObjectInput{
 			Bucket: aws.String(config.Bucket),
 			Key:    aws.String(objectKey),
@@ -27,12 +22,7 @@ func DownloadFile(config *Config, writer io.WriterAt, objectKey string) error {
 }
 
 func UploadFile(input io.Reader, config *Config, objectKey string) error {
-	uploader, err := NewS3Uploader(config)
-	if err != nil {
-		return fmt.Errorf("failed to init s3 uploader, %v", err)
-	}
-
-	_, err = uploader.Upload(&s3manager.UploadInput{
+	_, err := config.Uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(config.Bucket),
 		Key:    aws.String(objectKey),
 		Body:   input,
